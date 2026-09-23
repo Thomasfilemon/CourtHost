@@ -71,10 +71,12 @@
 .sheet-handle { flex: none; width: 40px; height: 4px; border-radius: 100px; background: #c6c7cb; margin: 10px auto 0; }
 .sheet-heading { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--roster-border); }
 .player-sheet h2 { font-size: 20px; font-weight: 700; margin: 0; color: #111827; }
-.sheet-close { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border: 0; border-radius: 50%; background: #f3f4f6; color: #596170; font-size: 24px; }
+.sheet-close { display: grid; place-items: center; flex: none; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #f3f4f6; color: #596170; }
+.sheet-close svg { display: block; }
 .sheet-close:hover { background: #e5e7eb; }
-.sheet-content, .player-form { display: flex; flex-direction: column; min-height: 0; }
-.sheet-body { padding: 16px; overflow-y: auto; overscroll-behavior-y: contain; scroll-padding-block: 16px; }
+/* Every form must pass the dialog's height constraint down to its scroll area. */
+.sheet-content, .sheet-content > form { display: flex; flex-direction: column; min-height: 0; }
+.sheet-body { flex: 1 1 auto; min-height: 0; padding: 16px; overflow-y: auto; overscroll-behavior-y: contain; scroll-padding-block: 16px; }
 .player-fields { display: grid; grid-template-columns: minmax(0, 1fr) 108px; gap: 12px; }
 .player-fields label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 12px; }
 .player-fields input { box-sizing: border-box; width: 100%; min-width: 0; height: 53px; font: inherit; font-size: 16px; padding: 12px; color: inherit; background: white; border: 1px solid var(--roster-border); border-radius: 8px; }

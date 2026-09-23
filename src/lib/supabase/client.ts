@@ -11,6 +11,8 @@ const config = readSupabaseConfig(
 // Passwords are submitted directly to Supabase Auth and never stored by our code.
 export const supabase = config ? createClient<Database>(config.url, config.key, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+  // A timed-out write may already have committed; never retry the RPC POST implicitly.
+  db: { retry: false },
   global: {
     // Give failed connections a finite timeout so the user can retry.
     fetch: (input, init) => fetch(input, {

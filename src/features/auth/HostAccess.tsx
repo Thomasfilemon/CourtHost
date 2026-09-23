@@ -1,5 +1,5 @@
 import { AuthLayout } from '../../app/AuthLayout';
-import { HostShell } from '../../app/HostShell';
+import { SessionHostShell } from '../../app/SessionHostShell';
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -33,7 +33,7 @@ export function HostAccess() {
   if (loading) return <AuthLayout><section className="auth-card" role="status"><p>{t('auth.checkingSession')}</p></section></AuthLayout>;
   if (failed) return <AuthLayout><section className="auth-card"><p role="alert">{t('auth.sessionFailed')}</p><button className="secondary-button" onClick={() => window.location.reload()}>{t('auth.retry')}</button></section></AuthLayout>;
   if (!session) return <AuthLayout><LoginForm /></AuthLayout>;
-  if (profile.data && !profile.isError) return <HostShell userId={session.user.id} name={profile.data.full_name} logoutButton={logoutButton} logoutFailed={logoutFailed} />;
+  if (profile.data && !profile.isError) return <SessionHostShell userId={session.user.id} name={profile.data.full_name} logoutButton={logoutButton} logoutFailed={logoutFailed} />;
   return <AuthLayout><section className="auth-card" aria-busy={profile.isFetching || leaving}>
     {profile.isPending ? <p role="status">{t('auth.checkingProfile')}</p> : profile.isError ? <>
       <h1>{t('auth.profileFailedTitle')}</h1><p role="alert">{t('auth.profileFailed')}</p>

@@ -1,0 +1,59 @@
+.sessions-page { max-width: 760px; margin: auto; padding: 16px 16px 120px; color: #262b38; }
+.session-heading { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; margin: 0 0 16px; }
+.session-heading h1 { color: #111827; font-size: 24px; font-weight: 700; line-height: 1.5; letter-spacing: 0; margin: 0; }
+.session-heading p { margin: 4px 0 0; color: #4b5563; font-size: 14px; }
+.session-heading > button { white-space: nowrap; }
+.session-list { display: grid; gap: 12px; }
+.session-card, .session-empty, .session-message { background: white; border-radius: 12px; padding: 16px; }
+.session-card h2 { margin: 0; font-size: 18px; }
+.session-empty { display: grid; gap: 14px; text-align: center; padding: 48px 20px; }
+.session-empty h2, .session-empty p { margin: 0; }
+.session-empty p { color: #4b5563; }
+.session-empty button { width: 100%; }
+.session-card-toggle { background: transparent; padding: 0; border: 0; width: 100%; display: flex; justify-content: space-between; align-items: flex-start; text-align: left; gap: 12px; color: inherit; min-height: 44px; }
+.session-card-main { display: grid; gap: 4px; min-width: 0; }
+.session-card-main strong { font-size: 16px; overflow-wrap: anywhere; }
+.session-card-main small { font-size: 12px; color: #4b5563; }
+.session-status { background: #f3f4f5; border-radius: 100px; padding: 5px 10px; flex: none; color: #374151; font-size: 12px; font-weight: 600; }
+.session-status-active { background: #dcfce7; color: #086147; }
+.session-status-scheduled { background: #daebff; color: #1764b8; }
+.session-status-completed { background: #e9eaf0; color: #262b38; }
+.session-summary { display: flex; gap: 8px; margin-top: 10px; color: #4b5563; font-size: 12px; flex-wrap: wrap; }
+.session-summary span + span::before { content: '·'; padding-right: 8px; }
+.session-detail { border-top: 1px solid #e2e4e7; margin-top: 16px; padding-top: 14px; }
+.session-meta { font-size: 12px; color: #4b5563; margin: 0 0 12px; }
+.session-callout { display: grid; gap: 12px; border: 1px solid #e2e4e7; background: #f8fbff; border-radius: 8px; padding: 14px; }
+.session-callout p { margin: 0; }
+.session-overtime { display: flex; gap: 8px; align-items: center; font-size: 12px; }
+.session-overtime input { width: 18px; height: 18px; accent-color: #087e5b; }
+.session-match-list { list-style: none; padding: 0; display: grid; gap: 12px; }
+.session-match { border: 1px solid #e2e4e7; border-radius: 8px; padding: 12px; }
+.session-match-top, .session-teams { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+.session-match-top { margin-bottom: 10px; }
+.session-teams { gap: 6px; }
+.session-teams span { width: 40%; overflow-wrap: anywhere; font-size: 13px; }
+.session-teams span:last-child { text-align: right; }
+.session-teams strong { flex: none; font-size: 14px; }
+.session-match > button { width: 100%; margin-top: 12px; }
+.session-score-fields { display: flex; gap: 16px; margin-top: 14px; }
+.session-score-fields label { flex: 1; font-size: 12px; }
+.session-score-fields input { display: block; width: 100%; height: 44px; padding: 8px; border: 1px solid #b7bbc5; border-radius: 5px; font: inherit; color: inherit; }
+.session-action-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.session-pager { display: flex; align-items: center; justify-content: space-between; }
+.session-form-content { display: grid; align-content: start; gap: 8px; }
+.session-form-content > label, .session-options legend, .session-roster legend { font-weight: 600; margin-top: 12px; }
+.session-form-content > input, .session-form-content > select, .session-roster > input { width: 100%; height: 48px; padding: 10px 12px; background: white; color: inherit; border: 1px solid #b7bbc5; border-radius: 5px; font: inherit; }
+.session-subtitle { color: #4b5563; margin: 0 0 8px; }
+.session-hint { color: #4b5563; font-size: 12px; margin: 8px 0 0; }
+.session-options, .session-roster { border: 0; padding: 0; margin: 8px 0 0; min-width: 0; }
+.session-options { display: flex; gap: 8px; flex-wrap: wrap; }
+.session-options legend, .session-roster legend { margin-bottom: 10px; }
+.session-options label { border: 1px solid #e2e4e7; padding: 10px 14px; border-radius: 22px; display: flex; gap: 6px; align-items: center; }
+.session-options input, .session-roster-row input { accent-color: #087e5b; width: 18px; height: 18px; flex: none; }
+.session-roster > input { margin-bottom: 10px; }
+.session-roster-list { max-height: 250px; overflow-y: auto; display: grid; gap: 8px; }
+.session-roster-row { border: 1px solid #e2e4e7; border-radius: 8px; min-height: 46px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; overflow-wrap: anywhere; }
+.session-skill { border-radius: 6px; background: #daebff; color: #1764b8; font-weight: 700; padding: 2px 7px; }
+.session-field-error { background: #ffe9e7; color: #99291d; border-radius: 5px; padding: 8px 12px; margin: 6px 0; }
+.player-sheet:has(.session-form) { max-height: min(94dvh, 920px); }
+@media (max-width: 380px) { .session-heading { flex-wrap: wrap; } .session-heading > button { width: 100%; } .session-options label { padding: 8px; } }
