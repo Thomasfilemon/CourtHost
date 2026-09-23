@@ -1,0 +1,6 @@
+feat: add courthost command function for player and session management
+
+- Implemented a new SQL function `courthost_private.command` to handle various actions related to players and sessions, including creating, updating, archiving, and deleting players, as well as managing sessions and matches.
+- Added TypeScript configuration file `tsconfig.json` for type checking and module resolution.
+- Created Vite configuration file `vite.config.ts` to set up the development server with React and Tailwind CSS.
+- Added Vitest configuration file `vitest.config.ts` for testing with a jsdom environment.

@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+/* TEMPORARY STARTER STYLES.
+   Figma's approved colors, spacing and typography will replace these provisional
+   tokens when we implement the real screens. No external font downloads yet. */
+:root {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #19362b;
+  background: #fafaf6;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --green: #145c3d;
+  --muted: #53665c;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 3px solid #b68e1a; outline-offset: 5px; }
+.page-shell { max-width: 1160px; margin: 0 auto; padding: 0 40px; }
+.site-header { display: flex; align-items: center; justify-content: space-between; padding: 28px 0; border-bottom: 1px solid #dfe5dd; }
+.wordmark { display: inline-flex; align-items: center; gap: 10px; font-size: 23px; font-weight: 750; letter-spacing: -1px; }
+.brand-mark { display: grid; place-content: center; width: 38px; height: 38px; border-radius: 12px; color: white; background: var(--green); position: relative; font-size: 30px; line-height: 1; padding-bottom: 6px; }
+.brand-mark span { position: absolute; right: 5px; bottom: 1px; color: #d4ec78; }
+.language-picker { display: flex; gap: 3px; border: 1px solid #dbe2d8; border-radius: 30px; padding: 4px; }
+.language-picker button { min-height: 36px; min-width: 44px; border: 0; border-radius: 24px; background: transparent; font-size: 12px; font-weight: 700; }
+.language-picker button[aria-pressed="true"] { background: var(--green); color: white; }
+.hero { display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; gap: 65px; padding: 64px 0 50px; }
+.eyebrow { margin: 0 0 16px; font-size: 11px; font-weight: 700; letter-spacing: 1.7px; line-height: 1.6; }
+h1 { margin: 0; font-size: clamp(40px, 5.5vw, 68px); font-weight: 650; line-height: 1.04; letter-spacing: -2.6px; max-width: 620px; }
+.intro { margin: 24px 0 28px; font-size: 17px; line-height: 1.65; color: var(--muted); max-width: 390px; }
+.primary-link { display: inline-flex; align-items: center; gap: 32px; background: var(--green); color: white; border-radius: 30px; padding: 15px 23px; font-size: 14px; font-weight: 600; }
+.primary-link:hover { background: #10492f; }
+.primary-link span { font-size: 20px; line-height: 1; }
+.court-panel { background: #e8eee2; border-radius: 140px 140px 24px 24px; padding: 58px 45px 25px; }
+.court-panel p { text-align: center; font-size: 12px; margin: 25px 0 0; }
+.court { width: 100%; aspect-ratio: .78; border: 2px solid #f5fae9; background: #367d54; border-radius: 2px; position: relative; box-shadow: 0 12px 28px #253a2326; }
+.court-inner { position: absolute; inset: 0 12%; border-left: 2px solid #f5fae9; border-right: 2px solid #f5fae9; }
+.service-line { position: absolute; inset: 22% 0; border-top: 2px solid #f5fae9; border-bottom: 2px solid #f5fae9; }
+.service-line::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; border-left: 2px solid #f5fae9; }
+.court-net { position: absolute; top: 50%; left: -4%; right: -4%; height: 4px; background: #eaf4df; box-shadow: 0 3px 0 #243e3270; }
+.tennis-ball { position: absolute; right: 18%; bottom: 12%; width: 33px; height: 33px; border-radius: 50%; background: #dcf18a; box-shadow: 3px 7px 4px #19362b50; overflow: hidden; }
+.tennis-ball::after { content: ""; position: absolute; width: 34px; height: 34px; border: 1.5px solid white; border-radius: 50%; left: 16px; top: -5px; }
+.setup-note { display: flex; align-items: flex-start; gap: 16px; background: white; padding: 25px 28px; border: 1px solid #dfe5dd; border-radius: 14px; }
+.status-dot { flex-shrink: 0; width: 9px; height: 9px; border-radius: 50%; background: #388259; margin-top: 6px; box-shadow: 0 0 0 5px #e9f2e9; }
+.setup-note .eyebrow { font-size: 10px; margin-bottom: 5px; }
+.setup-note h2 { font-size: 20px; font-weight: 650; margin: 0; letter-spacing: -.4px; }
+.setup-note p:last-child { margin: 7px 0 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.next-steps { padding: 52px 0; scroll-margin-top: 20px; }
+.next-steps h2 { margin: 0 0 24px; font-size: 30px; font-weight: 650; letter-spacing: -1px; }
+.next-steps .eyebrow { margin-bottom: 8px; }
+.step-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.step-list li { border-top: 1px solid #ced7c9; padding-top: 18px; }
+.step-number { font-size: 12px; color: var(--muted); }
+.step-list h3 { margin: 10px 0 6px; font-size: 18px; font-weight: 650; }
+.step-list p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0; }
+footer { border-top: 1px solid #dfe5dd; display: flex; justify-content: space-between; gap: 20px; padding: 22px 0; font-size: 12px; color: var(--muted); }
+
+/* Responsive enhancement: stack the content for a phone-sized viewport. */
+@media (max-width: 720px) {
+  .page-shell { padding: 0 22px; }
+  .site-header { padding: 20px 0; }
+  .hero { grid-template-columns: 1fr; gap: 32px; padding: 38px 0 32px; }
+  h1 { font-size: 49px; letter-spacing: -2px; }
+  .hero .eyebrow { font-size: 10px; }
+  .intro { font-size: 16px; margin-top: 18px; }
+  .court-panel { display: none; } /* Decorative only; keep the first phone screen focused. */
+  .setup-note { padding: 22px; }
+  .setup-note h2 { font-size: 19px; }
+  .next-steps { padding: 35px 0; }
+  .next-steps h2 { font-size: 27px; }
+  .step-list { grid-template-columns: 1fr; gap: 22px; }
+  footer { flex-direction: column; gap: 6px; }
+  footer p { margin: 0; }
+}
+
+/* Login slice: retain the starter palette while the Figma app screens follow. */
+.auth-layout { display: grid; gap: 32px; padding: 40px 0 60px; align-items: start; }
+.auth-intro h2 { font-size: 38px; line-height: 1.12; letter-spacing: -1.5px; margin: 0 0 18px; }
+.auth-intro > p:last-child { color: var(--muted); line-height: 1.7; max-width: 380px; }
+.auth-card { background: white; border: 1px solid #dfe5dd; border-radius: 20px; padding: 28px; min-width: 0; }
+.auth-card h1 { font-size: 32px; letter-spacing: -1px; line-height: 1.18; overflow-wrap: anywhere; }
+.auth-card p { line-height: 1.65; }
+.auth-description, .auth-footnote { color: var(--muted); }
+.auth-footnote { font-size: 13px; margin-bottom: 0; }
+.auth-card label { display: block; font-weight: 600; font-size: 14px; margin: 20px 0 8px; }
+.auth-card input { width: 100%; min-width: 0; border: 1px solid #a9b8a8; border-radius: 9px; padding: 13px 12px; font: inherit; background: white; color: #19362b; }
+.password-field { position: relative; }
+.password-field input { padding-right: 100px; }
+.text-button { position: absolute; right: 4px; top: 4px; bottom: 4px; border: 0; background: transparent; color: var(--green); font-size: 12px; padding: 0 10px; }
+.auth-submit { border: 0; width: 100%; justify-content: center; margin-top: 24px; min-height: 48px; }
+button:disabled { opacity: .6; cursor: wait; }
+.auth-error { color: #9d2424; background: #fff0ed; padding: 12px; border-radius: 8px; }
+.secondary-button { border: 1px solid #b2c1ae; background: white; color: var(--green); padding: 12px 18px; border-radius: 24px; min-height: 44px; }
+.auth-actions { margin-top: 22px; }
+.host-details { display: grid; gap: 8px; font-size: 14px; }
+.host-details dt { font-weight: 650; }
+.host-details dd { margin: 0 0 12px; overflow-wrap: anywhere; color: var(--muted); }
+.auth-next { background: #f1f5ec; border-radius: 12px; padding: 20px; }
+.auth-next h2 { font-size: 19px; margin: 0; }
+.auth-next p { font-size: 14px; margin-bottom: 0; }
+@media (min-width: 800px) {
+  .auth-layout { grid-template-columns: 1fr 1.1fr; gap: 70px; padding-top: 70px; }
+  .auth-intro { padding-top: 40px; }
+  .auth-intro h2 { font-size: 58px; }
+  .auth-card { padding: 36px; }
+}

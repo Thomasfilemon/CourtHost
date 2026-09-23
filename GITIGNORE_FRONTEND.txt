@@ -1,0 +1,8 @@
+# Add these lines to your EXISTING .gitignore; don't replace its other rules.
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.local
+*.backup.json

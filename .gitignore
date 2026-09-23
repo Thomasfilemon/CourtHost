@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build and coverage output
+dist/
+build/
+coverage/
+*.local
+*.backup.json
+
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Supabase local state
+.supabase/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
