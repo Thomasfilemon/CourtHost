@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
+import { liveScoreSchema, finalScoreSchema } from './session-model';
+import { SessionAdjustments } from './SessionAdjustments';
 import { Sheet } from '../../components/Sheet';
 import { getSessionDetail } from './session-api';
 import type { Match, Session, SessionDetail as Detail } from './session-model';
@@ -19,8 +20,8 @@ function ScoreEditor({ match, busy, onAction }: { match: Match; busy: boolean; o
   });
   function submit(action: 'save_score' | 'finish_match') {
     return handleSubmit(values => {
-      const result = z.object({ a: z.number().int().min(0).max(4), b: z.number().int().min(0).max(4) }).safeParse(values);
-      if (!result.success || (values.a + values.b > 4) || (action === 'finish_match' && values.a + values.b !== 4)) {
+      const result = (action === 'finish_match' ? finalScoreSchema : liveScoreSchema).safeParse(values);
+      if (!result.success) {
         setError('a', { message: action === 'finish_match' ? 'sessions.finalScoreError' : 'sessions.scoreError' });
         return;
       }
@@ -70,6 +71,7 @@ export function SessionDetail({ session, busy, errorKey, onAction }: {
       <button className="roster-primary" disabled={busy} onClick={() => onAction('generate_batch', { session_id: session.id, allow_overtime: overtime })}>{t(session.status === 'draft' ? 'sessions.generate' : 'sessions.generateNext')}</button></div>}
     {detail.data.matches.length > 0 && <ol className="session-match-list">{detail.data.matches.map(match => <MatchCard key={match.id} match={match} detail={detail.data} busy={busy}
       canStart={!current && match.id === firstUpcoming?.id && (session.status === 'scheduled' || session.status === 'active')} onAction={onAction} />)}</ol>}
+    <SessionAdjustments key={session.id} session={session} detail={detail.data} busy={busy} />
     {session.status === 'active' && !current && <button className="roster-text-button" disabled={busy} onClick={() => setConfirmAction('end_session')}>{t('sessions.endSession')}</button>}
     {(session.status === 'draft' || session.status === 'scheduled') && <button className="roster-danger-text" disabled={busy} onClick={() => setConfirmAction('cancel_session')}>{t('sessions.cancelSession')}</button>}
     {(session.status === 'completed' || session.status === 'cancelled') && <button className="roster-danger-text" disabled={busy} onClick={() => setConfirmAction('delete_session')}>{t('sessions.deleteSession')}</button>}

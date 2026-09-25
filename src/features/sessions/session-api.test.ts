@@ -49,3 +49,14 @@ test('session detail scopes all three reads to the selected session', async () =
   expect(queries[2].eq).toHaveBeenCalledWith('matches.session_id', 'session-id');
   expect(queries[2].select.mock.calls[0][0]).toContain('matches!inner(session_id)');
 });
+
+test.each([
+  ['correct_result', { match_id: 'm1', team1_score: 2, team2_score: 2 }],
+  ['withdraw_player', { session_id: 's1', session_player_id: 'p1' }],
+  ['cancel_match', { match_id: 'm2' }],
+] as const)('dispatches %s through the existing authorized command', async (action, data) => {
+  fake.rpc.mockResolvedValue({ data: {}, error: null });
+  await runSessionAction(action, data);
+  expect(fake.rpc).toHaveBeenCalledWith('courthost_command', { p_action: action, p_data: data });
+  expect(fake.from).not.toHaveBeenCalled();
+});
