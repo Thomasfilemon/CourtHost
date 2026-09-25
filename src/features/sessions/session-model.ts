@@ -50,3 +50,10 @@ export function sessionErrorKey(error: unknown) {
   if (data?.code === '23505') return 'sessions.duplicateError';
   return 'sessions.writeError';
 }
+
+// Both live entry and corrections use the same four-point scoring boundary.
+export const liveScoreSchema = z.object({
+  a: z.number().int().min(0).max(4),
+  b: z.number().int().min(0).max(4),
+}).refine(score => score.a + score.b <= 4);
+export const finalScoreSchema = liveScoreSchema.refine(score => score.a + score.b === 4);

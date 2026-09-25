@@ -69,6 +69,6 @@ export async function createSession(values: SessionFormValues) {
   if (!data || typeof data !== 'object' || Array.isArray(data) || typeof data.id !== 'string') throw new Error('Missing session ID');
   return data as unknown as Session;
 }
-export async function runSessionAction(action: 'generate_batch' | 'start_match' | 'save_score' | 'finish_match' | 'end_session' | 'cancel_session' | 'delete_session', data: Record<string, Json | undefined>) {
+export async function runSessionAction(action: 'generate_batch' | 'start_match' | 'save_score' | 'finish_match' | 'end_session' | 'cancel_session' | 'delete_session' | 'correct_result' | 'withdraw_player' | 'cancel_match', data: Record<string, Json | undefined>) {
   return command(action, data);
 }
