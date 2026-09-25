@@ -2,6 +2,9 @@ import { supabase } from '../../lib/supabase/client';
 import type { Json } from '../../lib/supabase/database.types';
 import { SESSION_PAGE_SIZE, sessionFormSchema, toCreatePayload } from './session-model';
 import type { Session, SessionFormValues } from './session-model';
+import type { Tables } from '../../lib/supabase/database.types';
+
+export type SessionLeaderboardRow = Tables<'session_leaderboards'>;
 
 function client() {
   if (!supabase) throw new Error('Missing Supabase configuration');
@@ -22,6 +25,12 @@ export async function getHostSession(hostId: string, sessionId: string) {
     .eq('host_id', hostId).eq('id', sessionId).is('deleted_at', null).single();
   if (error) throw error;
   return data;
+}
+export async function listSessionLeaderboard(sessionId: string, signal: AbortSignal) {
+  const { data, error } = await client().from('session_leaderboards').select('*')
+    .eq('session_id', sessionId).order('ranking').order('player_name').abortSignal(signal);
+  if (error) throw error;
+  return data ?? [];
 }
 export async function listActiveRoster(signal: AbortSignal) {
   const roster: { id: string; name: string; default_skill_rating: number }[] = [];

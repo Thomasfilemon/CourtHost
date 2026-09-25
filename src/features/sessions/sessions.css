@@ -40,6 +40,36 @@
 .session-score-fields input { display: block; width: 100%; height: 44px; padding: 8px; border: 1px solid #b7bbc5; border-radius: 5px; font: inherit; color: inherit; }
 .session-action-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 .session-pager { display: flex; align-items: center; justify-content: space-between; }
+.history-page { max-width: 900px; margin: auto; padding: 16px 16px 120px; color: #262b38; }
+.history-heading { margin-bottom: 16px; }
+.history-heading h1 { color: #111827; font-size: 24px; font-weight: 700; line-height: 1.5; letter-spacing: 0; margin: 0; }
+.history-heading p { margin: 4px 0 0; color: #4b5563; font-size: 14px; }
+.history-toolbar { display: flex; gap: 10px; margin-bottom: 16px; }
+.history-search, .history-filter { display: block; min-width: 0; }
+.history-search { flex: 1; }
+.history-search input, .history-filter select { box-sizing: border-box; width: 100%; height: 48px; padding: 10px 12px; border: 1px solid #b7bbc5; border-radius: 8px; background: white; color: inherit; font: inherit; }
+.history-filter { width: 170px; }
+.history-list { display: grid; gap: 12px; }
+.history-card { background: white; border-radius: 12px; padding: 16px; }
+.history-card-toggle { background: transparent; padding: 0; border: 0; width: 100%; display: flex; justify-content: space-between; align-items: flex-start; text-align: left; gap: 12px; color: inherit; }
+.history-card-main { display: grid; gap: 4px; min-width: 0; }
+.history-card-main strong { font-size: 16px; overflow-wrap: anywhere; }
+.history-card-main small { font-size: 12px; color: #4b5563; }
+.history-summary { display: flex; gap: 8px; margin-top: 10px; color: #4b5563; font-size: 12px; flex-wrap: wrap; }
+.history-summary span + span::before { content: '·'; padding-right: 8px; }
+.history-leaderboard { border-top: 1px solid #e2e4e7; margin-top: 16px; padding-top: 14px; }
+.history-leaderboard h2 { margin: 0 0 10px; font-size: 16px; }
+.history-message, .history-empty { background: white; border-radius: 12px; padding: 32px 20px; text-align: center; }
+.history-empty h2, .history-empty p { margin: 0; }
+.history-empty p { margin-top: 8px; color: #4b5563; }
+.history-table-wrap { overflow-x: auto; }
+.history-table { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 12px; }
+.history-table th, .history-table td { padding: 10px 8px; border-bottom: 1px solid #e2e4e7; text-align: right; white-space: nowrap; }
+.history-table th:first-child, .history-table td:first-child { text-align: left; }
+.history-table th:nth-child(2), .history-table td:nth-child(2) { text-align: left; width: 100%; }
+.history-table thead th { color: #666c78; font-size: 11px; font-weight: 700; }
+.history-table tbody th { font-weight: 600; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .session-form-content { display: grid; align-content: start; gap: 8px; }
 .session-form-content > label, .session-options legend, .session-roster legend { font-weight: 600; margin-top: 12px; }
 .session-form-content > input, .session-form-content > select, .session-roster > input { width: 100%; height: 48px; padding: 10px 12px; background: white; color: inherit; border: 1px solid #b7bbc5; border-radius: 5px; font: inherit; }
@@ -56,4 +86,4 @@
 .session-skill { border-radius: 6px; background: #daebff; color: #1764b8; font-weight: 700; padding: 2px 7px; }
 .session-field-error { background: #ffe9e7; color: #99291d; border-radius: 5px; padding: 8px 12px; margin: 6px 0; }
 .player-sheet:has(.session-form) { max-height: min(94dvh, 920px); }
-@media (max-width: 380px) { .session-heading { flex-wrap: wrap; } .session-heading > button { width: 100%; } .session-options label { padding: 8px; } }
+@media (max-width: 380px) { .session-heading { flex-wrap: wrap; } .session-heading > button { width: 100%; } .session-options label { padding: 8px; } .history-toolbar { flex-direction: column; } .history-filter { width: auto; } .history-card { padding: 12px; } }
