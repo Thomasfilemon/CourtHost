@@ -1,0 +1,20 @@
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, expect, test, vi } from 'vitest';
+const fake = vi.hoisted(() => ({ channel: vi.fn(), removeChannel: vi.fn() }));
+vi.mock('../../lib/supabase/client', () => ({ supabase: fake }));
+import { useSessionLive } from './use-session-live';
+afterEach(() => { vi.useRealTimers(); vi.resetAllMocks(); });
+test('coalesces untrusted broadcasts, refreshes after reconnect, polls, and leaves the channel on unmount', () => {
+  vi.useFakeTimers();
+  let event: () => void = () => {}; let status: (value: string) => void = () => {};
+  const channel = { on: vi.fn((_kind, _filter, callback) => { event = callback; return channel; }), subscribe: vi.fn(callback => { status = callback; return channel; }) };
+  fake.channel.mockReturnValue(channel);
+  const refresh = vi.fn(); const hook = renderHook(() => useSessionLive('courthost:topic', refresh));
+  act(() => { status('SUBSCRIBED'); event(); event(); vi.advanceTimersByTime(250); });
+  expect(refresh).toHaveBeenCalledTimes(1); expect(hook.result.current).toBe('live');
+  act(() => { status('CHANNEL_ERROR'); }); expect(hook.result.current).toBe('reconnecting');
+  act(() => { status('SUBSCRIBED'); vi.advanceTimersByTime(250); }); expect(refresh).toHaveBeenCalledTimes(2);
+  act(() => { vi.advanceTimersByTime(15000); }); expect(refresh).toHaveBeenCalledTimes(3);
+  hook.unmount(); expect(fake.removeChannel).toHaveBeenCalledWith(channel);
+  act(() => { event(); vi.advanceTimersByTime(30000); }); expect(refresh).toHaveBeenCalledTimes(3);
+});
