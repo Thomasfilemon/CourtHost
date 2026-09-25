@@ -23,7 +23,7 @@ export function PublicSessionPage({ token }: { token: string }) {
     <header className="public-header"><strong>CourtHost</strong><LanguagePicker /></header>
     <h1>{data.session.name}</h1><p>{new Intl.DateTimeFormat(i18n.language === 'id' ? 'id-ID' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(data.session.start_time))} · {t(`sessions.status.${data.session.status}`)}</p>
     <p role="status">{t(`sessions.connection_${connection}`)}</p>
-    <label className="public-player">{t('sessions.publicChoosePlayer')}<select value={playerId} onChange={event => setPlayerId(event.target.value)}><option value="">{t('sessions.publicEveryone')}</option>{data.players.map(player => <option key={player.id} value={player.id}>{player.name}</option>)}</select></label>
+    <label className="public-player">{t('sessions.publicChoosePlayer')}<select value={playerId} onChange={event => setPlayerId(event.target.value)}><option value="">{t('sessions.publicEveryone')}</option>{data.players.map(player => <option key={player.id} value={player.id}>{player.name}{player.is_retired ? ` (${t('sessions.withdrawn')})` : ''}</option>)}</select></label>
     {myNext && next && <p role="status" className="public-next">{t('sessions.publicNext', { number: next.number })}</p>}
     <section aria-labelledby="public-matches"><h2 id="public-matches">{t('sessions.publicSchedule')}</h2>
       {!data.matches.length && <p>{t('sessions.publicNoMatches')}</p>}
