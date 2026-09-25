@@ -1,0 +1,12 @@
+.public-session { max-width: 900px; margin: auto; padding: 24px 16px 64px; color: #262b38; }
+.public-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.public-session h1 { overflow-wrap: anywhere; }
+.public-player { display: grid; gap: 8px; max-width: 360px; }
+.public-player select, .session-share input, .history-toolbar input[type=date] { width: 100%; min-height: 44px; padding: 10px; border: 1px solid #b7bbc5; border-radius: 8px; background: white; color: inherit; font: inherit; }
+.public-matches { list-style: none; padding: 0; display: grid; gap: 12px; }
+.public-my-match { outline: 2px solid #1764b8; }
+.public-next { background: #daebff; border-radius: 8px; padding: 16px; }
+.public-note { color: #4b5563; font-size: 14px; }
+.session-share { border-top: 1px solid #e2e4e7; margin-top: 16px; padding-top: 16px; }
+.session-share-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+.history-toolbar label { min-width: 0; }

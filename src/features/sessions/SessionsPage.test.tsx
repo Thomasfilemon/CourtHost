@@ -5,13 +5,14 @@ import { beforeEach, expect, test, vi } from 'vitest';
 import i18n from 'i18next';
 const api = vi.hoisted(() => ({ listSessions: vi.fn(), listActiveRoster: vi.fn(), createSession: vi.fn(), getSessionDetail: vi.fn(), runSessionAction: vi.fn(), getHostSession: vi.fn() }));
 vi.mock('./session-api', () => api);
+vi.mock('../public-session/SessionShare', () => ({ SessionShare: () => null }));
 import { SessionsPage } from './SessionsPage';
 const roster = [1, 2, 3, 4].map(n => ({ id: `${n}`.repeat(8) + '-aaaa-4aaa-8aaa-' + `${n}`.repeat(12), name: `Player ${n}`, default_skill_rating: n + 3 }));
 const session = { id: 'session-id', host_id: 'host', name: 'Club Night', start_time: '2026-09-23T19:00:00Z', duration_minutes: 120,
   estimated_match_minutes: 20, game_mode: 'singles', matchmaking_mode: 'random', status: 'draft', deleted_at: null, created_at: '2026-09-23T00:00:00Z' };
 function mount() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(<QueryClientProvider client={client}><SessionsPage userId="host" /></QueryClientProvider>);
+  return { ...render(<QueryClientProvider client={client}><SessionsPage userId="host" /></QueryClientProvider>), client };
 }
 beforeEach(async () => {
   vi.clearAllMocks(); await i18n.changeLanguage('en');
@@ -93,4 +94,18 @@ test('cancelling a draft requires confirmation; dismissing leaves it untouched',
   await userEvent.click(screen.getByRole('button', { name: 'Cancel session' }));
   await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel session' }));
   await waitFor(() => expect(api.runSessionAction).toHaveBeenCalledWith('cancel_session', { session_id: session.id }));
+});
+
+test('live refresh preserves an unsaved score while updating untouched fields', async () => {
+  api.listSessions.mockResolvedValue({ sessions: [{ ...session, status: 'active' }], count: 1 });
+  const detail = { participants: [], assignments: [], matches: [{ id: 'm1', match_number: 1, status: 'in_progress', team1_score: 0, team2_score: 0 }] };
+  api.getSessionDetail.mockResolvedValue(detail);
+  const { client } = mount();
+  await userEvent.click(await screen.findByRole('button', { name: /Club Night/ }));
+  const score = await screen.findByLabelText('Team 1 score');
+  await userEvent.clear(score); await userEvent.type(score, '3');
+  api.getSessionDetail.mockResolvedValue({ ...detail, matches: [{ ...detail.matches[0], team1_score: 2, team2_score: 1 }] });
+  await client.invalidateQueries({ queryKey: ['session-detail', session.id] });
+  await waitFor(() => expect((screen.getByLabelText('Team 2 score') as HTMLInputElement).value).toBe('1'));
+  expect((score as HTMLInputElement).value).toBe('3');
 });

@@ -1,3 +1,4 @@
+import { SessionShare } from '../public-session/SessionShare';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -12,7 +13,9 @@ type ActionData = { session_id?: string; match_id?: string; team1_score?: number
 function ScoreEditor({ match, busy, onAction }: { match: Match; busy: boolean; onAction: (action: Action, data: ActionData) => void }) {
   const { t } = useTranslation();
   const { register, handleSubmit, setError, formState: { errors } } = useForm<{ a: number; b: number }>({
-    defaultValues: { a: match.team1_score ?? 0, b: match.team2_score ?? 0 },
+    // Live refresh updates untouched fields without discarding unsaved score edits.
+    values: { a: match.team1_score ?? 0, b: match.team2_score ?? 0 },
+    resetOptions: { keepDirtyValues: true },
   });
   function submit(action: 'save_score' | 'finish_match') {
     return handleSubmit(values => {
@@ -44,7 +47,7 @@ function MatchCard({ match, detail, busy, onAction, canStart }: {
     <span className={`session-status session-status-${match.status}`}>{t(`sessions.status.${match.status}`, { defaultValue: match.status })}</span></div>
     <div className="session-teams"><span>{teams[0] || '—'}</span><strong>{match.team1_score ?? '—'} : {match.team2_score ?? '—'}</strong><span>{teams[1] || '—'}</span></div>
     {match.status === 'scheduled' && canStart && <button type="button" className="roster-primary" disabled={busy} onClick={() => onAction('start_match', { match_id: match.id })}>{t('sessions.startMatch')}</button>}
-    {match.status === 'in_progress' && <ScoreEditor key={`${match.id}-${match.team1_score}-${match.team2_score}`} match={match} busy={busy} onAction={onAction} />}
+    {match.status === 'in_progress' && <ScoreEditor key={match.id} match={match} busy={busy} onAction={onAction} />}
   </li>;
 }
 export function SessionDetail({ session, busy, errorKey, onAction }: {
@@ -60,6 +63,7 @@ export function SessionDetail({ session, busy, errorKey, onAction }: {
   const current = detail.data.matches.find(m => m.status === 'in_progress');
   const firstUpcoming = detail.data.matches.find(m => m.status === 'scheduled');
   return <div className="session-detail">
+    <SessionShare hostId={session.host_id} sessionId={session.id} />
     <p className="session-meta">{t('sessions.participantSummary', { count: detail.data.participants.length })} · {t('sessions.matchesSummary', { count: detail.data.matches.length })}</p>
     {(session.status === 'draft' || ((session.status === 'scheduled' || session.status === 'active') && !current)) && <div className="session-callout"><p>{t(session.status === 'draft' ? 'sessions.draftExplanation' : 'sessions.nextBatchExplanation')}</p>
       <label className="session-overtime"><input type="checkbox" checked={overtime} onChange={e => setOvertime(e.target.checked)} />{t('sessions.allowOvertime')}</label>
