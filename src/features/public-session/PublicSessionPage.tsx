@@ -1,3 +1,4 @@
+import { PublicMatchList } from './PublicMatchList';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -16,22 +17,25 @@ export function PublicSessionPage({ token }: { token: string }) {
   // Stop displaying cached results on any failed authorization/read, including revocation.
   const data = query.isError ? undefined : query.data;
   const connection = useSessionLive(data?.realtime_topic, () => { void query.refetch(); });
-  if (!data) return <main className="public-session"><LanguagePicker /><h1>CourtHost</h1><p role={query.isError ? 'alert' : 'status'}>{t(query.isError ? 'sessions.publicUnavailable' : 'sessions.historyLoading')}</p>{query.isError && <button onClick={() => void query.refetch()}>{t('sessions.retry')}</button>}</main>;
+  if (!data) return <main className="public-session"><LanguagePicker /><h1>CourtHost</h1><p role={query.isError ? 'alert' : 'status'}>{t(query.isError ? 'sessions.publicUnavailable' : 'sessions.publicLoading')}</p>{query.isError && <button className="session-secondary" onClick={() => void query.refetch()}>{t('sessions.retry')}</button>}</main>;
+  const playing = data.matches.filter(match => match.status === 'in_progress');
+  const upcoming = data.matches.filter(match => match.status === 'scheduled');
+  const finished = data.matches.filter(match => match.status === 'completed' || match.status === 'cancelled');
   const next = data.matches.find(match => match.status === 'scheduled');
   const myNext = playerId && next?.participants.some(player => player.session_player_id === playerId);
   return <main className="public-session">
     <header className="public-header"><strong>CourtHost</strong><LanguagePicker /></header>
     <h1>{data.session.name}</h1><p>{new Intl.DateTimeFormat(i18n.language === 'id' ? 'id-ID' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(data.session.start_time))} · {t(`sessions.status.${data.session.status}`)}</p>
-    <p role="status">{t(`sessions.connection_${connection}`)}</p>
+    <p role="status" className={`session-connection is-${connection}`}>{t(`sessions.connection_${connection}`)}</p>
     <label className="public-player">{t('sessions.publicChoosePlayer')}<select value={playerId} onChange={event => setPlayerId(event.target.value)}><option value="">{t('sessions.publicEveryone')}</option>{data.players.map(player => <option key={player.id} value={player.id}>{player.name}{player.is_retired ? ` (${t('sessions.withdrawn')})` : ''}</option>)}</select></label>
     {myNext && next && <p role="status" className="public-next">{t('sessions.publicNext', { number: next.number })}</p>}
-    <section aria-labelledby="public-matches"><h2 id="public-matches">{t('sessions.publicSchedule')}</h2>
-      {!data.matches.length && <p>{t('sessions.publicNoMatches')}</p>}
-      <ol className="public-matches">{data.matches.map(match => <li key={match.id} className={`session-match ${match.participants.some(player => player.session_player_id === playerId) ? 'public-my-match' : ''}`}>
-        <div className="session-match-top"><strong>{t('sessions.matchNumber', { number: match.number })}</strong><span>{t(`sessions.status.${match.status}`)}</span></div>
-        <div className="session-teams"><span>{match.participants.filter(p => p.team === 1).map(p => data.players.find(player => player.id === p.session_player_id)?.name ?? '—').join(' + ')}</span><strong>{match.team1_score ?? '—'} : {match.team2_score ?? '—'}</strong><span>{match.participants.filter(p => p.team === 2).map(p => data.players.find(player => player.id === p.session_player_id)?.name ?? '—').join(' + ')}</span></div>
-      </li>)}</ol>
+    <section aria-labelledby="public-current"><h2 id="public-current">{t('sessions.publicNow')}</h2>
+      {playing.length ? <PublicMatchList matches={playing} players={data.players} playerId={playerId} /> : <p className="public-empty">{t(data.session.status === 'completed' || data.session.status === 'cancelled' ? 'sessions.publicFinished' : 'sessions.publicWaiting')}</p>}
     </section>
+    <section aria-labelledby="public-upcoming"><h2 id="public-upcoming">{t('sessions.publicUpcoming')}</h2>
+      {upcoming.length ? <PublicMatchList matches={upcoming} players={data.players} playerId={playerId} /> : <p className="public-empty">{t('sessions.publicNoUpcoming')}</p>}
+    </section>
+    {finished.length > 0 && <details className="public-results"><summary>{t('sessions.publicResults', { count: finished.length })}</summary><PublicMatchList matches={finished} players={data.players} playerId={playerId} /></details>}
     <section className="history-card"><h2>{t('sessions.historyLeaderboard')}</h2><LeaderboardTable rows={data.leaderboard} /></section>
     <p className="public-note">{t('sessions.publicReadOnly')}</p>
   </main>;

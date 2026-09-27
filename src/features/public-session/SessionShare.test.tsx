@@ -13,13 +13,14 @@ beforeEach(async () => { vi.resetAllMocks(); await i18n.changeLanguage('en'); ap
 function mount() { render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><SessionShare hostId="host" sessionId="s1" /></QueryClientProvider>); }
 test('revocation requires confirmation and hides the old link after success', async () => {
   mount(); await screen.findByRole('link', { name: 'Open player view' });
+  await userEvent.click(screen.getByText('Manage player access'));
   await userEvent.click(screen.getByRole('button', { name: 'Revoke link' }));
   expect(api.changeShare).not.toHaveBeenCalled();
   await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' }));
   expect(api.changeShare).not.toHaveBeenCalled();
   await userEvent.click(screen.getByRole('button', { name: 'Revoke link' }));
   api.getShareDetails.mockResolvedValue({ public_code: 'a'.repeat(64), realtime_token: 'c'.repeat(64), status: 'active', share_revoked_at: 'now' });
-  await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Confirm' }));
+  await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Revoke link' }));
   await waitFor(() => expect(api.changeShare).toHaveBeenCalledWith('s1', 'revoke_share'));
   await screen.findByText('The player link is revoked. Create a new link to share again.');
   expect(screen.queryByRole('link', { name: 'Open player view' })).toBeNull();

@@ -10,3 +10,22 @@
 .session-share { border-top: 1px solid #e2e4e7; margin-top: 16px; padding-top: 16px; }
 .session-share-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
 .history-toolbar label { min-width: 0; }
+.public-session { --public-border: #dce4e9; }
+.public-header { padding-bottom: 16px; border-bottom: 1px solid var(--public-border); }
+.public-header > strong { font-size: 20px; color: #087e5b; }
+.public-session h1 { font-size: clamp(24px, 4vw, 32px); line-height: 1.25; margin: 24px 0 10px; }
+.public-session h2 { font-size: 18px; margin: 24px 0 12px; }
+.public-player { max-width: none; margin: 20px 0; padding: 16px; background: #fff; border: 1px solid var(--public-border); border-radius: 12px; font-size: 14px; font-weight: 600; }
+.public-session .session-match { background: #fff; padding: 16px; border-radius: 12px; }
+.public-session .public-playing { border-color: #087e5b; background: #f2fbf6; }
+.public-session .session-teams strong { font-size: 22px; }
+.public-empty { padding: 16px; border-radius: 8px; background: #f5f7f9; color: #586575; font-size: 14px; }
+.public-results, .share-options, .share-leaderboard { border-top: 1px solid var(--public-border, #dce4e9); margin-top: 16px; padding-top: 8px; }
+.public-results { margin-bottom: 24px; }
+:is(.public-results, .share-options, .share-leaderboard) > summary { min-height: 44px; padding: 12px 0; cursor: pointer; font-size: 14px; font-weight: 600; }
+.session-share h3 { margin-bottom: 8px; font-size: 16px; }
+.session-share > p, .session-share label { font-size: 13px; line-height: 1.6; }
+.session-share label { display: grid; gap: 6px; }
+.session-share input { font-size: 12px; color: #586575; text-overflow: ellipsis; }
+.session-share-actions > :is(button, a) { flex: 1; }
+@media (max-width: 380px) { .session-share-actions { flex-direction: column; } }
