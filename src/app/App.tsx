@@ -7,3 +7,4 @@ export function App() {
   const publicRoute = (typeof window === 'undefined' ? '' : window.location.pathname).match(/^\/s\/([^/]+)\/?$/);
   return <QueryClientProvider client={queryClient}><>{publicRoute ? <PublicSessionPage key={publicRoute[1]} token={publicRoute[1]} /> : <HostAccess />}</></QueryClientProvider>;
 }
+// This is to test commit
