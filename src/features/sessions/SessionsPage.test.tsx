@@ -75,8 +75,9 @@ test('a finished score requires exactly four total points before submission', as
   api.listSessions.mockResolvedValue({ sessions: [{ ...session, status: 'active' }], count: 1 });
   api.getSessionDetail.mockResolvedValue({ participants: [], assignments: [], matches: [{ id: 'm1', match_number: 1, status: 'in_progress', team1_score: 0, team2_score: 0 }] });
   mount(); await userEvent.click(await screen.findByRole('button', { name: /Club Night/ }));
-  await userEvent.click(await screen.findByRole('button', { name: 'Finish match' }));
-  expect(await screen.findByText('A finished match must total exactly 4 points.')).toBeTruthy();
+  const finish = await screen.findByRole('button', { name: 'Finish match' });
+  expect((finish as HTMLButtonElement).disabled).toBe(true);
+  expect(screen.getByText('To finish, the two scores must add up to 4. You can save a partial score at any time.')).toBeTruthy();
   expect(api.runSessionAction).not.toHaveBeenCalled();
   await userEvent.clear(screen.getByLabelText('Team 1 score'));
   await userEvent.type(screen.getByLabelText('Team 1 score'), '3');
@@ -108,4 +109,14 @@ test('live refresh preserves an unsaved score while updating untouched fields', 
   await client.invalidateQueries({ queryKey: ['session-detail', session.id] });
   await waitFor(() => expect((screen.getByLabelText('Team 2 score') as HTMLInputElement).value).toBe('1'));
   expect((score as HTMLInputElement).value).toBe('3');
+});
+
+test('a failed session cancellation stays open with an error and no success notice', async () => {
+  api.listSessions.mockResolvedValue({ sessions: [session], count: 1 });
+  api.runSessionAction.mockRejectedValue({ code: '42501' });
+  mount(); await userEvent.click(await screen.findByRole('button', { name: /Club Night/ }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Cancel session' }));
+  await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel session' }));
+  expect(await within(screen.getByRole('dialog')).findByRole('alert')).toBeTruthy();
+  expect(screen.queryByText('Session cancelled.')).toBeNull();
 });

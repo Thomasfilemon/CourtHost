@@ -13,11 +13,12 @@ type Action = 'generate_batch' | 'start_match' | 'save_score' | 'finish_match' |
 type ActionData = { session_id?: string; match_id?: string; team1_score?: number; team2_score?: number; allow_overtime?: boolean };
 function ScoreEditor({ match, busy, onAction }: { match: Match; busy: boolean; onAction: (action: Action, data: ActionData) => void }) {
   const { t } = useTranslation();
-  const { register, handleSubmit, setError, formState: { errors } } = useForm<{ a: number; b: number }>({
+  const { register, handleSubmit, setError, watch, formState: { errors } } = useForm<{ a: number; b: number }>({
     // Live refresh updates untouched fields without discarding unsaved score edits.
     values: { a: match.team1_score ?? 0, b: match.team2_score ?? 0 },
     resetOptions: { keepDirtyValues: true },
   });
+  const canFinish = finalScoreSchema.safeParse(watch()).success;
   function submit(action: 'save_score' | 'finish_match') {
     return handleSubmit(values => {
       const result = (action === 'finish_match' ? finalScoreSchema : liveScoreSchema).safeParse(values);
@@ -32,8 +33,9 @@ function ScoreEditor({ match, busy, onAction }: { match: Match; busy: boolean; o
     <label>{t('sessions.teamOneScore')}<input type="number" min="0" max="4" step="1" inputMode="numeric" disabled={busy} {...register('a', { valueAsNumber: true })} /></label>
     <label>{t('sessions.teamTwoScore')}<input type="number" min="0" max="4" step="1" inputMode="numeric" disabled={busy} {...register('b', { valueAsNumber: true })} /></label>
   </div>{errors.a && <p role="alert" className="session-field-error">{t(errors.a.message!)}</p>}
+  <p className="session-hint">{t('sessions.finishScoreHint')}</p>
   <div className="session-action-row"><button type="button" className="roster-text-button" disabled={busy} onClick={() => void submit('save_score')()}>{t('sessions.saveScore')}</button>
-    <button type="button" className="roster-primary" disabled={busy} onClick={() => void submit('finish_match')()}>{t('sessions.finishMatch')}</button></div>
+    <button type="button" className="roster-primary" disabled={busy || !canFinish} onClick={() => void submit('finish_match')()}>{t('sessions.finishMatch')}</button></div>
   </div>;
 }
 function MatchCard({ match, detail, busy, onAction, canStart }: {
@@ -53,7 +55,7 @@ function MatchCard({ match, detail, busy, onAction, canStart }: {
 }
 export function SessionDetail({ session, busy, errorKey, onAction }: {
   session: Session; busy: boolean; errorKey: string;
-  onAction: (action: Action, data: ActionData) => void;
+  onAction: (action: Action, data: ActionData) => Promise<boolean>;
 }) {
   const { t } = useTranslation();
   const [overtime, setOvertime] = useState(false);
@@ -64,22 +66,22 @@ export function SessionDetail({ session, busy, errorKey, onAction }: {
   const current = detail.data.matches.find(m => m.status === 'in_progress');
   const firstUpcoming = detail.data.matches.find(m => m.status === 'scheduled');
   return <div className="session-detail">
-    <SessionShare hostId={session.host_id} sessionId={session.id} />
     <p className="session-meta">{t('sessions.participantSummary', { count: detail.data.participants.length })} · {t('sessions.matchesSummary', { count: detail.data.matches.length })}</p>
     {(session.status === 'draft' || ((session.status === 'scheduled' || session.status === 'active') && !current)) && <div className="session-callout"><p>{t(session.status === 'draft' ? 'sessions.draftExplanation' : 'sessions.nextBatchExplanation')}</p>
       <label className="session-overtime"><input type="checkbox" checked={overtime} onChange={e => setOvertime(e.target.checked)} />{t('sessions.allowOvertime')}</label>
       <button className="roster-primary" disabled={busy} onClick={() => onAction('generate_batch', { session_id: session.id, allow_overtime: overtime })}>{t(session.status === 'draft' ? 'sessions.generate' : 'sessions.generateNext')}</button></div>}
     {detail.data.matches.length > 0 && <ol className="session-match-list">{detail.data.matches.map(match => <MatchCard key={match.id} match={match} detail={detail.data} busy={busy}
       canStart={!current && match.id === firstUpcoming?.id && (session.status === 'scheduled' || session.status === 'active')} onAction={onAction} />)}</ol>}
+    <SessionShare hostId={session.host_id} sessionId={session.id} />
     <SessionAdjustments key={session.id} session={session} detail={detail.data} busy={busy} />
     {session.status === 'active' && !current && <button className="roster-text-button" disabled={busy} onClick={() => setConfirmAction('end_session')}>{t('sessions.endSession')}</button>}
     {(session.status === 'draft' || session.status === 'scheduled') && <button className="roster-danger-text" disabled={busy} onClick={() => setConfirmAction('cancel_session')}>{t('sessions.cancelSession')}</button>}
     {(session.status === 'completed' || session.status === 'cancelled') && <button className="roster-danger-text" disabled={busy} onClick={() => setConfirmAction('delete_session')}>{t('sessions.deleteSession')}</button>}
-    {errorKey && <p role="alert" className="session-field-error">{t(errorKey)}</p>}
+    {errorKey && !confirmAction && <p role="alert" className="session-field-error">{t(errorKey)}</p>}
     {confirmAction && <Sheet title={t(`sessions.${confirmAction}Title`)} busy={busy} onClose={() => setConfirmAction(null)}>
       <div className="sheet-body"><p>{t(`sessions.${confirmAction}Warning`)}</p>{errorKey && <p role="alert" className="session-field-error">{t(errorKey)}</p>}</div>
       <div className="sheet-actions"><button className="roster-text-button" disabled={busy} onClick={() => setConfirmAction(null)}>{t('sessions.cancel')}</button>
-        <button className={confirmAction === 'end_session' ? 'roster-primary' : 'roster-danger'} disabled={busy} onClick={() => { onAction(confirmAction, { session_id: session.id }); setConfirmAction(null); }}>{t(`sessions.${confirmAction}Button`)}</button></div>
+        <button className={confirmAction === 'end_session' ? 'roster-primary' : 'roster-danger'} disabled={busy} onClick={async () => { if (await onAction(confirmAction, { session_id: session.id })) setConfirmAction(null); }}>{t(busy ? 'sessions.saving' : `sessions.${confirmAction}Button`)}</button></div>
     </Sheet>}
   </div>;
 }

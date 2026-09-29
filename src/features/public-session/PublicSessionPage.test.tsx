@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { beforeEach, expect, test, vi } from 'vitest';
@@ -22,4 +22,17 @@ test('a revoked token removes previously visible results after a live refresh', 
   api.live.mock.calls.at(-1)![1]();
   await screen.findByRole('alert'); expect(screen.queryByText('Friday tennis')).toBeNull();
   await waitFor(() => expect(api.live).toHaveBeenLastCalledWith(undefined, expect.any(Function)));
+});
+
+test('live matches are prominent and past results are available on demand', async () => {
+  api.getPublicSession.mockResolvedValue({ ...data, matches: [
+    { ...data.matches[0], id: 'past', number: 1, status: 'completed', team1_score: 3, team2_score: 1 },
+    { ...data.matches[0], id: 'live', number: 2, status: 'in_progress', team1_score: 0, team2_score: 1 },
+    { ...data.matches[0], id: 'next', number: 3 },
+  ] });
+  mount(); await screen.findByText('Friday tennis');
+  expect(within(screen.getByRole('region', { name: 'On court now' })).getByText('Match 2')).toBeTruthy();
+  expect(screen.queryByRole('listitem', { name: /Match 1/ })).toBeNull();
+  await userEvent.click(screen.getByText('Previous matches (1)'));
+  expect(screen.getByText('Match 1').closest('details')?.open).toBe(true);
 });

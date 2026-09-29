@@ -34,7 +34,7 @@ export function SessionsPage({ userId }: { userId: string }) {
     finally { lock.current = false; }
   }
   async function run(kind: Parameters<typeof runSessionAction>[0], data: Parameters<typeof runSessionAction>[1]) {
-    if (lock.current) return;
+    if (lock.current) return false;
     lock.current = true; setErrorKey(''); setNotice('');
     try {
       await action.mutateAsync({ kind, data });
@@ -44,8 +44,11 @@ export function SessionsPage({ userId }: { userId: string }) {
       await Promise.all([
         cache.invalidateQueries({ queryKey: ['sessions', userId] }),
         cache.invalidateQueries({ queryKey: ['session-detail', selected] }),
+        cache.invalidateQueries({ queryKey: ['session-leaderboard', userId, selected] }),
+        cache.invalidateQueries({ queryKey: ['session-history', userId] }),
       ]);
-    } catch (error) { setErrorKey(sessionErrorKey(error)); }
+      return true;
+    } catch (error) { setErrorKey(sessionErrorKey(error)); return false; }
     finally { lock.current = false; }
   }
   const busy = create.isPending || action.isPending;
@@ -62,18 +65,18 @@ export function SessionsPage({ userId }: { userId: string }) {
       sessions.length === 0 && !selectedNewSession ? <div className="session-empty"><h2>{t('sessions.emptyTitle')}</h2><p>{t('sessions.emptyBody')}</p><button className="roster-primary" onClick={() => setCreateOpen(true)}>{t('sessions.create')}</button></div> :
       <div className="session-list">{sessions.map(session => <article key={session.id} className="session-card">
         <button className="session-card-toggle" aria-expanded={selected === session.id} onClick={() => { setErrorKey(''); setSelected(selected === session.id ? null : session.id); }}>
-          <span className="session-card-main"><strong>{session.name}</strong><small>{new Intl.DateTimeFormat(i18n.language === 'id' ? 'id-ID' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(session.start_time))}</small></span>
+          <span className="session-card-main"><strong>{session.name}</strong><small>{new Intl.DateTimeFormat(i18n.language === 'id' ? 'id-ID' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(session.start_time))}</small><small className="session-toggle-hint">{t(selected === session.id ? 'sessions.hideDetails' : 'sessions.viewDetails')}</small></span>
           <span className={`session-status session-status-${session.status}`}>{t(`sessions.status.${session.status}`, { defaultValue: session.status })}</span>
         </button>
         <div className="session-summary"><span>{t(session.game_mode === 'singles' ? 'sessions.singles' : 'sessions.doubles')}</span>
           <span>{t('sessions.minutes', { count: session.duration_minutes })}</span>
           <span>{t(session.matchmaking_mode === 'skill_based' ? 'sessions.skill' : 'sessions.random')}</span></div>
-        {selected === session.id && <SessionDetail session={session as Session} busy={busy} errorKey={errorKey} onAction={(kind, data) => void run(kind, data)} />}
+        {selected === session.id && <SessionDetail session={session as Session} busy={busy} errorKey={errorKey} onAction={run} />}
       </article>)}
       {(query.data?.count ?? 0) > SESSION_PAGE_SIZE && <div className="session-pager"><button className="roster-text-button" disabled={page === 0 || query.isFetching} onClick={() => { setSelected(null); setPage(p => p - 1); }}>{t('sessions.previous')}</button>
         <span>{t('sessions.page', { page: page + 1 })}</span><button className="roster-text-button" disabled={(page + 1) * SESSION_PAGE_SIZE >= (query.data?.count ?? 0) || query.isFetching} onClick={() => { setSelected(null); setPage(p => p + 1); }}>{t('sessions.next')}</button></div>}
       </div>}
-    {selectedNewSession && <article className="session-card"><h2>{selectedNewSession.name}</h2><SessionDetail session={selectedNewSession} busy={busy} errorKey={errorKey} onAction={(kind, data) => void run(kind, data)} /></article>}
+    {selectedNewSession && <article className="session-card"><h2>{selectedNewSession.name}</h2><SessionDetail session={selectedNewSession} busy={busy} errorKey={errorKey} onAction={run} /></article>}
     {createOpen && <Sheet title={t('sessions.createTitle')} busy={busy} onClose={() => setCreateOpen(false)}>
       <CreateSessionForm busy={busy} errorKey={errorKey} onCancel={() => setCreateOpen(false)} onCreate={values => void submit(values)} />
     </Sheet>}

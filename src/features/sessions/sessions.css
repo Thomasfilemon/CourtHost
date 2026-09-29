@@ -99,3 +99,46 @@
 .session-withdraw-list span { min-width: 0; overflow-wrap: anywhere; }
 .session-withdraw-list small { display: block; color: #4b5563; }
 .session-withdraw-list button { flex-shrink: 0; }
+
+/* Shared controls are scoped to session features; roster styling stays independent. */
+.session-primary, .session-secondary, .session-danger {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 10px 16px; border-radius: 8px; border: 1px solid transparent;
+  font: inherit; font-size: 14px; font-weight: 600; line-height: 1.4; text-decoration: none; cursor: pointer; text-align: center;
+}
+.session-primary { background: #087e5b; color: white; }
+.session-secondary { background: white; color: #244b60; border-color: #c5cfd7; }
+.session-danger { background: #fff5f4; color: #a12828; border-color: #efc5c2; }
+.session-primary:hover { background: #076b4d; }
+.session-secondary:hover { background: #f1f6fa; }
+.session-danger:hover { background: #ffe9e7; }
+:is(.session-primary, .session-secondary, .session-danger):disabled { cursor: not-allowed; opacity: .55; }
+:is(.sessions-page, .history-page, .public-session) :is(button, a, input, select, summary):focus-visible,
+.player-sheet:has(.session-score-fields) :is(button, input):focus-visible { outline: 3px solid #1764b8; outline-offset: 3px; }
+.session-toggle-hint { color: #1764b8 !important; font-weight: 600; }
+.session-card-toggle, .history-card-toggle { cursor: pointer; min-height: 56px; }
+.session-action-row { flex-wrap: wrap; }
+.session-score-fields label { min-width: 0; }
+.session-status-in_progress { background: #dcfce7; color: #086147; }
+.session-status-cancelled { background: #fff0ed; color: #943425; }
+.history-toolbar label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; }
+.history-dates > label { flex: 1; }
+.history-dates input { min-width: 0; box-sizing: border-box; width: 100%; min-height: 44px; padding: 10px; border: 1px solid #b7bbc5; border-radius: 8px; background: white; color: inherit; font: inherit; }
+.history-reset { margin: 0 0 16px; }
+.session-pager { gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.session-pager > span { font-size: 13px; color: #4b5563; }
+.history-table-note { font-size: 12px; color: #586575; margin: 8px 0; }
+.session-connection { display: flex; align-items: baseline; gap: 8px; color: #586575; font-size: 12px; }
+.session-connection::before { content: ''; width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: #9ba6b2; }
+.session-connection.is-live::before { background: #087e5b; }
+.session-connection.is-offline::before, .session-connection.is-reconnecting::before { background: #b87811; }
+@media (max-width: 440px) {
+  .history-toolbar { flex-wrap: wrap; }
+  .history-search { flex-basis: 100%; }
+  .history-filter { width: 100%; }
+  .session-action-row > button { flex: 1; }
+}
+/* A wide leaderboard must scroll inside its card, not widen the CSS grid/page. */
+.history-list { grid-template-columns: minmax(0, 1fr); }
+.history-card, .history-table-wrap { min-width: 0; }
+.history-table th:nth-child(2), .history-table td:nth-child(2) { width: auto; min-width: 120px; }
